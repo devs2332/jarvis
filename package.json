@@ -1,0 +1,15 @@
+{
+  "name": "jarvis-ai",
+  "version": "4.0.0",
+  "scripts": {
+    "build": "python build.py",
+    "build:frontend": "python build.py --frontend",
+    "build:backend": "python build.py --backend",
+    "dev": "cd frontend && npm run dev",
+    "install:frontend": "cd frontend && npm install",
+    "start": "python main.py"
+  },
+  "dependencies": {
+    "@openrouter/sdk": "^0.8.0"
+  }
+}

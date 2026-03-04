@@ -1,0 +1,91 @@
+# ──────────────────────────────────────
+# .gitignore — Jarvis AI
+# ──────────────────────────────────────
+
+# ===== Environment & Secrets =====
+.env
+*.env
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ===== Virtual Environments =====
+venv/
+ENV/
+env/
+.venv/
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Node / Frontend =====
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ===== Data & Runtime =====
+database/memory.json
+database/vector_db/
+
+# ===== Audio / Media =====
+*.mp3
+*.wav
+tts_*.mp3
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== Test Outputs =====
+test_output/
+test_output.txt
+error_output.txt
+full_output.txt
+frontend/build_log*.txt
+screenshots/
+
+# ===== ML Models =====
+models/
+pretrained_models/
+*.pth
+*.bin
+*.onnx
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Infrastructure =====
+postgres_data/
+redis_data/
+chroma_data/
+
+# ===== Misc =====
+.pytest_cache/
+.ruff_cache/

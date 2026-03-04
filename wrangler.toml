@@ -1,0 +1,16 @@
+name = "jarvis-dashboard"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-10-18"
+
+[build]
+command = "python build.py --frontend"
+
+# Exclude backend and node_modules from being uploaded
+exclude = [
+  "backend/**",
+  "node_modules/**",
+  "frontend/node_modules/**",
+  ".venv/**",
+  "__pycache__/**",
+  "database/**"
+]
