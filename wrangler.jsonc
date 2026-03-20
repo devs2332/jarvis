@@ -1,6 +1,7 @@
 {
     "$schema": "./node_modules/wrangler/config-schema.json",
     "name": "jarvis",
+    "main": "frontend/public/_worker.js",
     "compatibility_date": "2024-03-20",
     "observability": {
         "enabled": true
