@@ -1,4 +1,4 @@
-﻿# jarvis_ai/server/routes.py
+# jarvis_ai/server/routes.py
 """
 API Routes — REST + WebSocket endpoints for Jarvis AI.
 
@@ -134,6 +134,7 @@ async def chat(req: ChatRequest, request: Request):
         language=req.language,
         provider=req.provider,
         model=req.model,
+        api_keys=req.api_keys,
     )
     elapsed = round(time.time() - start, 2)
 
@@ -174,7 +175,8 @@ async def ws_chat(websocket: WebSocket):
         "search_mode": "none",
         "language": "English",
         "provider": None,
-        "model": None
+        "model": None,
+        "api_keys": None
     }
 
     # Wire up the memory callback if not already done
@@ -228,6 +230,7 @@ async def ws_chat(websocket: WebSocket):
                 ws_state["language"] = msg.get("language", ws_state["language"])
                 ws_state["provider"] = msg.get("provider", ws_state["provider"])
                 ws_state["model"] = msg.get("model", ws_state["model"])
+                ws_state["api_keys"] = msg.get("api_keys", ws_state["api_keys"])
 
                 if msg.get("active"):
                     voice.start(on_speech_recognized_callback=on_speech_recognized, mode="browser")
@@ -245,6 +248,7 @@ async def ws_chat(websocket: WebSocket):
             language = msg.get("language", "English")
             provider = msg.get("provider", None)
             model = msg.get("model", None)
+            api_keys = msg.get("api_keys", {})
 
             if not user_message:
                 await websocket.send_json({"type": "error", "text": "Empty message"})
@@ -257,10 +261,11 @@ async def ws_chat(websocket: WebSocket):
             ws_state["language"] = language
             ws_state["provider"] = provider
             ws_state["model"] = model
+            ws_state["api_keys"] = api_keys
 
             await _process_chat_message(
                 user_message, websocket, agent, vm, voice,
-                research_mode, fast_mode, search_mode, language, provider, model,
+                research_mode, fast_mode, search_mode, language, provider, model, api_keys
             )
 
     except WebSocketDisconnect:
@@ -279,7 +284,7 @@ async def _process_voice_command(text, websocket, agent, vm, voice, ws_state):
 
 
 async def _process_chat_message(user_message, websocket, agent, vm, voice,
-                                research_mode, fast_mode, search_mode, language, provider, model):
+                                research_mode, fast_mode, search_mode, language, provider, model, api_keys):
     """Shared core logic for handling an LLM request and streaming back over WS."""
     await websocket.send_json({"type": "thinking", "text": "Processing..."})
 
@@ -294,6 +299,7 @@ async def _process_chat_message(user_message, websocket, agent, vm, voice,
             language=language,
             provider=provider,
             model=model,
+            api_keys=api_keys,
         ):
             full_response += token
             await websocket.send_json({"type": "token", "text": token})
@@ -306,6 +312,7 @@ async def _process_chat_message(user_message, websocket, agent, vm, voice,
             language=language,
             provider=provider,
             model=model,
+            api_keys=api_keys,
         )
 
     await websocket.send_json({

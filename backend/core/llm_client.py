@@ -1,4 +1,4 @@
-﻿# jarvis_ai/core/llm_client.py
+# jarvis_ai/core/llm_client.py
 """
 LLM Client with multi-provider support.
 
@@ -46,16 +46,17 @@ class LLMClient:
         # Ensure client is initialized
         self._get_client(provider)
 
-    def _get_client(self, provider):
+    def _get_client(self, provider, api_keys=None):
         """Get or initialize a client for the specified provider."""
-        if provider in self.clients:
+        has_custom_key = api_keys and api_keys.get(provider)
+        if not has_custom_key and provider in self.clients:
             return self.clients[provider]
 
         try:
             client = None
             if provider == "groq":
                 from groq import Groq
-                api_key = os.getenv("GROQ_API_KEY")
+                api_key = (api_keys or {}).get("groq") or os.getenv("GROQ_API_KEY")
                 if not api_key:
                     raise ValueError("GROQ_API_KEY not found")
                 client = Groq(api_key=api_key)
@@ -63,7 +64,7 @@ class LLMClient:
 
             elif provider == "openai":
                 from openai import OpenAI
-                api_key = os.getenv("OPENAI_API_KEY")
+                api_key = (api_keys or {}).get("openai") or os.getenv("OPENAI_API_KEY")
                 if not api_key:
                     raise ValueError("OPENAI_API_KEY not found")
                 client = OpenAI(api_key=api_key)
@@ -71,7 +72,7 @@ class LLMClient:
 
             elif provider == "mistral":
                 from mistralai import Mistral
-                api_key = os.getenv("MISTRAL_API_KEY")
+                api_key = (api_keys or {}).get("mistral") or os.getenv("MISTRAL_API_KEY")
                 if not api_key:
                     raise ValueError("MISTRAL_API_KEY not found")
                 client = Mistral(api_key=api_key)
@@ -79,7 +80,7 @@ class LLMClient:
 
             elif provider == "google":
                 import google.generativeai as genai
-                api_key = os.getenv("GOOGLE_API_KEY")
+                api_key = (api_keys or {}).get("google") or os.getenv("GOOGLE_API_KEY")
                 if not api_key:
                     raise ValueError("GOOGLE_API_KEY not found")
                 genai.configure(api_key=api_key)
@@ -88,7 +89,7 @@ class LLMClient:
 
             elif provider == "openrouter":
                 from openai import OpenAI
-                api_key = os.getenv("OPENROUTER_API_KEY")
+                api_key = (api_keys or {}).get("openrouter") or os.getenv("OPENROUTER_API_KEY")
                 if not api_key:
                     raise ValueError("OPENROUTER_API_KEY not found")
                 client = OpenAI(
@@ -103,7 +104,7 @@ class LLMClient:
 
             elif provider == "nvidia":
                 from openai import OpenAI
-                api_key = os.getenv("NVIDIA_API_KEY")
+                api_key = (api_keys or {}).get("nvidia") or os.getenv("NVIDIA_API_KEY")
                 if not api_key:
                     raise ValueError("NVIDIA_API_KEY not found")
                 client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
@@ -112,14 +113,15 @@ class LLMClient:
             else:
                 raise ValueError(f"Invalid LLM_PROVIDER: {provider}")
 
-            self.clients[provider] = client
+            if not has_custom_key:
+                self.clients[provider] = client
             return client
 
         except Exception as e:
             logger.error(f"❌ Failed to initialize {provider} client: {e}")
             raise
 
-    def generate(self, prompt, temperature=0.5, provider=None, model=None):
+    def generate(self, prompt, temperature=0.5, provider=None, model=None, api_keys=None):
         """
         Generate text completion from the configured LLM provider.
         """
@@ -148,7 +150,7 @@ class LLMClient:
         for attempt in range(self.max_retries):
             try:
                 logger.debug(f"LLM request attempt {attempt + 1}/{self.max_retries} ({active_provider}:{model})")
-                client = self._get_client(active_provider)
+                client = self._get_client(active_provider, api_keys=api_keys)
                 
                 if active_provider == "groq":
                     res = client.chat.completions.create(
@@ -205,7 +207,7 @@ class LLMClient:
         
         return "I apologize, but I couldn't process your request."
 
-    def generate_stream(self, prompt, temperature=0.5, provider=None, model=None):
+    def generate_stream(self, prompt, temperature=0.5, provider=None, model=None, api_keys=None):
         """
         Stream text completion token by token.
         """
@@ -231,7 +233,7 @@ class LLMClient:
                 model = MODEL_NVIDIA
 
         try:
-            client = self._get_client(active_provider)
+            client = self._get_client(active_provider, api_keys=api_keys)
             
             if active_provider == "groq":
                 stream = client.chat.completions.create(
@@ -300,13 +302,13 @@ class LLMClient:
                         yield delta.content
 
             else:
-                yield self.generate(prompt, temperature, provider=active_provider, model=model)
+                yield self.generate(prompt, temperature, provider=active_provider, model=model, api_keys=api_keys)
 
         except Exception as e:
             logger.error(f"❌ Streaming error: {e}")
             yield f"Error: {str(e)}"
 
-    def generate_with_tools(self, prompt, tools, temperature=0.5, provider=None, model=None):
+    def generate_with_tools(self, prompt, tools, temperature=0.5, provider=None, model=None, api_keys=None):
         """
         Generate a response with tool-calling support.
         
@@ -347,7 +349,7 @@ class LLMClient:
                 model = MODEL_NVIDIA
 
         try:
-            client = self._get_client(active_provider)
+            client = self._get_client(active_provider, api_keys=api_keys)
 
             # Providers with native tool-calling support
             if active_provider in ("openai", "groq", "openrouter"):
@@ -438,7 +440,7 @@ Available tools:
 If you need to use a tool, respond ONLY with JSON: {{"tool": "tool_name", "args": {{...}}}}
 Otherwise, respond normally."""
 
-                response = self.generate(enhanced_prompt, temperature, provider=active_provider, model=model)
+                response = self.generate(enhanced_prompt, temperature, provider=active_provider, model=model, api_keys=api_keys)
                 
                 # Try to parse tool call from response
                 import json

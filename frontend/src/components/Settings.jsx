@@ -6,7 +6,22 @@ export default function Settings({ darkMode, setDarkMode, onMobileMenuOpen }) {
     const [language, setLanguage] = useState('English');
     const [defaultModel, setDefaultModel] = useState('');
     const [availableModels, setAvailableModels] = useState([]);
-    const [apiKey, setApiKey] = useState('sk-........................');
+    
+    // Custom API Keys
+    const [apiKeys, setApiKeys] = useState(() => {
+        try {
+            const stored = localStorage.getItem('jarvis_api_keys');
+            return stored ? JSON.parse(stored) : { openai: '', groq: '', mistral: '', google: '', openrouter: '', nvidia: '' };
+        } catch (e) {
+            return { openai: '', groq: '', mistral: '', google: '', openrouter: '', nvidia: '' };
+        }
+    });
+
+    const handleKeyChange = (provider, value) => {
+        const updated = { ...apiKeys, [provider]: value };
+        setApiKeys(updated);
+        localStorage.setItem('jarvis_api_keys', JSON.stringify(updated));
+    };
 
     // Toggle states
     const [dataSharing, setDataSharing] = useState(false);
@@ -96,19 +111,23 @@ export default function Settings({ darkMode, setDarkMode, onMobileMenuOpen }) {
                                 </div>
                             </div>
                             <div className="p-6">
-                                <label className="block text-sm font-medium mb-2">OpenAI API Key</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="password"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                        className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono"
-                                    />
-                                    <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                                        Update
-                                    </button>
+                                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Custom API Keys</h3>
+                                <p className="text-xs text-slate-500 mb-4">Keys are stored locally in your browser. Leave blank to use server defaults.</p>
+                                
+                                <div className="space-y-4">
+                                    {Object.keys(apiKeys).map(provider => (
+                                        <div key={provider}>
+                                            <label className="block text-xs font-bold mb-1.5 capitalize">{provider} API Key</label>
+                                            <input
+                                                type="password"
+                                                value={apiKeys[provider] || ''}
+                                                onChange={(e) => handleKeyChange(provider, e.target.value)}
+                                                placeholder={`Optional ${provider} key...`}
+                                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 font-mono"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
-                                <p className="text-xs text-slate-400 mt-2">Your key is stored locally and never shared.</p>
                             </div>
                         </div>
                     </section>

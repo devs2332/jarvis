@@ -1,4 +1,4 @@
-﻿# jarvis_ai/core/agent.py
+# jarvis_ai/core/agent.py
 """
 Agent — Central orchestrator for Jarvis AI.
 
@@ -30,7 +30,7 @@ class Agent:
         self.tool_registry = ToolRegistry()
         logger.info("🤖 Agent initialized (vector_memory=%s)", "ON" if vector_memory else "OFF")
 
-    def run(self, user_input, research_mode=False, fast_mode=False, search_mode="none", language="English", provider=None, model=None):
+    def run(self, user_input, research_mode=False, fast_mode=False, search_mode="none", language="English", provider=None, model=None, api_keys=None):
         """Process user input and return a response string."""
         self.state.set("THINKING")
 
@@ -70,7 +70,7 @@ class Agent:
             tool_schemas = get_tool_schemas()
             
             llm_result = self.llm.generate_with_tools(
-                user_input, tools=tool_schemas, provider=provider, model=model
+                user_input, tools=tool_schemas, provider=provider, model=model, api_keys=api_keys
             )
             
             if llm_result.get("type") == "tool_call":
@@ -90,7 +90,7 @@ class Agent:
                 followup = f"Tool '{tool_name}' returned: {tool_result}\n\nBased on this result, provide a helpful response to the user's original request: {user_input}"
                 response = self.brain.think(
                     followup, fast_mode=fast_mode, language=language,
-                    provider=provider, model=model,
+                    provider=provider, model=model, api_keys=api_keys,
                 )
                 self.state.set("SPEAKING")
                 return response
@@ -100,13 +100,13 @@ class Agent:
         # 6️⃣ Standard LLM with RAG context (fallback if no tool call)
         response = self.brain.think(
             user_input, research_mode=research_mode, fast_mode=fast_mode,
-            search_mode=search_mode, language=language, provider=provider, model=model,
+            search_mode=search_mode, language=language, provider=provider, model=model, api_keys=api_keys,
         )
         self.state.set("SPEAKING")
         return response
 
     async def run_stream(self, user_input, research_mode=False, fast_mode=False,
-                         search_mode="none", language="English", provider=None, model=None):
+                         search_mode="none", language="English", provider=None, model=None, api_keys=None):
         """
         Async generator that yields response tokens for WebSocket streaming.
         Delegates to brain.think_stream() for clean RAG + streaming.
@@ -126,7 +126,7 @@ class Agent:
         # Stream from Brain (single source of RAG logic)
         async for token in self.brain.think_stream(
             user_input, research_mode=research_mode, fast_mode=fast_mode,
-            search_mode=search_mode, language=language, provider=provider, model=model,
+            search_mode=search_mode, language=language, provider=provider, model=model, api_keys=api_keys,
         ):
             yield token
 

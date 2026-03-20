@@ -16,6 +16,7 @@ class ChatRequest(BaseModel):
     language: str = "English"
     provider: Optional[str] = None
     model: Optional[str] = None
+    api_keys: Optional[dict[str, str]] = None
 
 
 class ChatResponse(BaseModel):

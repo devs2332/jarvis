@@ -281,13 +281,20 @@ export default function ChatPanel({ onMobileMenuOpen }) {
 
             setIsRecording(true);
             setTranscribedText('');
+            let apiKeys = {};
+            try {
+                const stored = localStorage.getItem('jarvis_api_keys');
+                if (stored) apiKeys = JSON.parse(stored);
+            } catch (e) {}
+
             wsRef.current.send(JSON.stringify({
                 type: "voice_toggle",
                 active: true,
                 provider: selectedModel.provider,
                 model: selectedModel.model,
                 search_mode: searchMode,
-                language: language
+                language: language,
+                api_keys: apiKeys
             }));
         } catch (err) {
             console.error("Error accessing microphone:", err);
@@ -385,13 +392,20 @@ export default function ChatPanel({ onMobileMenuOpen }) {
             setMessages(prev => [...prev, { role: 'user', content: userMsg, time: new Date() }]);
         }
 
+        let apiKeys = {};
+        try {
+            const stored = localStorage.getItem('jarvis_api_keys');
+            if (stored) apiKeys = JSON.parse(stored);
+        } catch (e) {}
+
         const payload = {
             message: userMsg,
             search_mode: searchMode,
             research_mode: searchMode === 'deep_research',
             provider: selectedModel.provider,
             model: selectedModel.model,
-            language: language
+            language: language,
+            api_keys: apiKeys
         };
 
         if (wsRef.current?.readyState === WebSocket.OPEN) {
