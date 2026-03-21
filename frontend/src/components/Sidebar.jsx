@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar({ connected, isCollapsed, toggleCollapse, darkMode, setDarkMode, isMobileMenuOpen, setIsMobileMenuOpen, className = '' }) {
@@ -43,8 +44,8 @@ export default function Sidebar({ connected, isCollapsed, toggleCollapse, darkMo
             <aside className={`
                 fixed inset-y-0 left-0 z-50 md:relative
                 ${isCollapsed ? 'w-20' : 'w-[280px]'} 
-                h-full bg-[#f9fafb] dark:bg-[#15232b] border-r border-gray-200 dark:border-slate-800 
-                flex flex-col shrink-0 overflow-hidden transition-all duration-300
+                h-full bg-white/70 dark:bg-[#070b10]/70 backdrop-blur-3xl border-r border-black/5 dark:border-white/5 
+                flex flex-col shrink-0 overflow-hidden transition-all duration-300 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                 ${className}
             `}>
@@ -86,7 +87,7 @@ export default function Sidebar({ connected, isCollapsed, toggleCollapse, darkMo
                 <div className="px-5 py-2 mb-2">
                     <NavLink
                         to="/"
-                        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition shadow-[0_2px_4px_rgba(0,0,0,0.02)] font-medium text-[15px] ${isCollapsed ? 'px-0 rounded-xl' : ''}`}
+                        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-indigo-600 border border-white/10 rounded-full text-white hover:shadow-lg hover:shadow-primary/30 transition-all font-bold text-[15px] ${isCollapsed ? 'px-0 rounded-xl' : ''}`}
                         title={isCollapsed ? "New Chat" : ""}
                     >
                         <span className="material-icons text-xl">add</span>
@@ -105,10 +106,10 @@ export default function Sidebar({ connected, isCollapsed, toggleCollapse, darkMo
                                     to={item.path}
                                     title={isCollapsed ? item.label : ""}
                                     className={({ isActive }) => `
-                                    flex items-center gap-3 px-4 py-2 rounded-xl transition font-medium
+                                    flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-200 font-bold
                                     ${isActive
-                                            ? 'bg-white dark:bg-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-black/20 border border-transparent text-gray-900 dark:text-white'
-                                            : 'text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800/60'
+                                            ? 'bg-primary/10 dark:bg-primary/20 text-primary shadow-sm border border-primary/10'
+                                            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                                         }
                                     ${isCollapsed ? 'justify-center px-0' : ''}
                                 `}

@@ -110,9 +110,12 @@ export default function HistorySearch({ onMobileMenuOpen }) {
 
 
     return (
-        <div className="flex-1 flex flex-col h-[calc(100vh-theme(spacing.16))] relative bg-white dark:bg-[#0b1217] font-display text-slate-900 dark:text-slate-100">
+        <div className="flex-1 flex flex-col h-[calc(100vh-theme(spacing.16))] relative bg-slate-50 dark:bg-[#070b10] font-display text-slate-900 dark:text-slate-100">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none -z-10 blur-3xl opacity-60" />
+            
             {/* Header */}
-            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-4 px-8 py-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1217] z-10 shrink-0">
+            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-4 px-8 py-6 border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-[#070b10]/60 backdrop-blur-2xl z-20 shrink-0 sticky top-0">
                 <div className="flex items-center gap-3">
                     <button onClick={onMobileMenuOpen} className="md:hidden p-2 -ml-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                         <span className="material-icons">menu</span>
@@ -179,7 +182,7 @@ export default function HistorySearch({ onMobileMenuOpen }) {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     whileHover={{ scale: 1.005, backgroundColor: "rgba(var(--color-surface-hover), 0.5)" }}
                                     onClick={() => navigate(`/c/${item.id}`)}
-                                    className="group relative bg-white dark:bg-[#151b26] border border-slate-200 dark:border-slate-800 rounded-xl p-4 cursor-pointer hover:border-primary/30 hover:shadow-md dark:hover:shadow-black/20 transition-all duration-200"
+                                    className="group relative bg-white/80 dark:bg-white/[0.02] backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-3xl p-5 cursor-pointer shadow-lg shadow-black/5 dark:shadow-black/20 hover:border-primary/30 hover:shadow-xl dark:hover:shadow-black/40 hover:-translate-y-0.5 transition-all duration-300"
                                 >
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex items-start gap-4 overflow-hidden">

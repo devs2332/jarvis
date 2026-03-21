@@ -19,7 +19,8 @@ export default function VoiceVisualizer({ isActive, audioLevel = 0.5, transcribe
                     className="absolute left-1/2 -top-16 -translate-x-1/2 flex flex-col items-center pointer-events-none z-50"
                 >
                     {isActive ? (
-                        <div className="flex items-end justify-center gap-[4px] h-10 w-32 bg-white/90 dark:bg-[#151b26]/90 backdrop-blur-md rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,194,255,0.3)] border border-primary/20 p-2">
+                        <div className="flex items-end justify-center gap-[4px] h-10 w-32 bg-white/80 dark:bg-[#0f151d]/80 backdrop-blur-2xl rounded-3xl shadow-[0_8px_30px_-4px_rgba(0,194,255,0.2)] dark:shadow-[0_8px_30px_-4px_rgba(0,194,255,0.1)] border border-black/5 dark:border-white/10 p-2 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-primary/5 dark:bg-primary/10 animate-pulse pointer-events-none" />
                             {baseHeights.map((base, i) => {
                                 // Add some random flutter or use the audio level directly
                                 // Map audio level (0-1) to height (10% to 100%)
@@ -46,7 +47,7 @@ export default function VoiceVisualizer({ isActive, audioLevel = 0.5, transcribe
                         </div>
                     ) : (
                         transcribedText && (
-                            <div className="bg-white/90 dark:bg-[#151b26]/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 max-w-sm px-4 py-2 flex items-center gap-2">
+                            <div className="bg-white/80 dark:bg-[#0f151d]/80 backdrop-blur-2xl rounded-3xl shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 max-w-sm px-4 py-2 flex items-center gap-2">
                                 <span className="material-icons text-primary text-sm animate-pulse">mic</span>
                                 <span className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate">
                                     "{transcribedText}"

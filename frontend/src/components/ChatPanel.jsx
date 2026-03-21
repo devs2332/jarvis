@@ -77,14 +77,31 @@ export default function ChatPanel({ onMobileMenuOpen }) {
         };
     }, []);
 
-    // Fetch models from backend
     useEffect(() => {
         fetchJSON('/api/v1/models')
             .then(data => {
                 if (data.models && data.models.length > 0) {
-                    setAvailableModels(data.models);
+                    let models = [...data.models];
+                    
+                    // Inject Custom Endpoint if configured locally
+                    try {
+                        const stored = localStorage.getItem('jarvis_api_keys');
+                        if (stored) {
+                            const keys = JSON.parse(stored);
+                            if (keys.custom_base_url && keys.custom_model) {
+                                models.unshift({
+                                    id: 'custom-' + keys.custom_model,
+                                    name: 'Custom Server: ' + keys.custom_model,
+                                    provider: 'custom',
+                                    model: keys.custom_model
+                                });
+                            }
+                        }
+                    } catch (e) {}
+
+                    setAvailableModels(models);
                     // Default to first model from the active list
-                    setSelectedModel(data.models[0]);
+                    setSelectedModel(models[0]);
                 }
             })
             .catch(err => console.warn('Could not fetch models from backend:', err));
@@ -432,9 +449,12 @@ export default function ChatPanel({ onMobileMenuOpen }) {
     };
 
     return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-white dark:bg-[#0b1217]">
+        <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50 dark:bg-[#070b10]">
+            {/* Background Ambient Glow */}
+            <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none -z-10 blur-3xl opacity-60" />
+
             {/* Header — always visible at top, never scrolls */}
-            <header className="h-[72px] shrink-0 flex items-center justify-between px-4 sm:px-6 bg-white/95 dark:bg-[#0b1217]/95 backdrop-blur-sm z-30 border-b border-gray-100 dark:border-slate-800">
+            <header className="h-[72px] shrink-0 flex items-center justify-between px-4 sm:px-6 bg-white/60 dark:bg-[#0b1217]/60 backdrop-blur-2xl z-30 border-b border-black/5 dark:border-white/5 relative">
                 <div className="flex items-center gap-2 relative">
                     <button
                         onClick={onMobileMenuOpen}
@@ -446,7 +466,7 @@ export default function ChatPanel({ onMobileMenuOpen }) {
                     <div className="flex items-center gap-2 relative" ref={modelMenuRef}>
                         <button
                             onClick={() => setShowModelMenu(!showModelMenu)}
-                            className="flex items-center gap-1 sm:gap-2 font-bold text-gray-800 dark:text-white text-lg sm:text-xl hover:bg-gray-50 dark:hover:bg-slate-800 px-2 sm:px-3 py-2 rounded-xl transition max-w-[140px] sm:max-w-[200px] truncate"
+                            className="flex items-center gap-1 sm:gap-2 font-black text-slate-800 dark:text-white text-lg sm:text-xl hover:bg-black/5 dark:hover:bg-white/5 px-3 py-2 rounded-xl transition max-w-[140px] sm:max-w-[200px] truncate"
                         >
                             <span className="truncate">{selectedModel.name}</span>
                             <span className="material-icons text-gray-400 dark:text-slate-500 text-xl shrink-0">keyboard_arrow_down</span>
@@ -535,9 +555,9 @@ export default function ChatPanel({ onMobileMenuOpen }) {
             </header >
 
             {/* Chat Area — scrollable middle, takes remaining space */}
-            <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-24 xl:px-48 pt-4 pb-4 space-y-8">
+            <div className="flex-1 overflow-y-auto px-4 md:px-10 lg:px-24 xl:px-48 pt-6 pb-6 space-y-8 custom-scrollbar">
                 {(displayMessages || []).length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: "easeOut" }} className="h-full flex flex-col items-center justify-center text-center">
                         <div className="w-24 h-24 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-blue-500/5 ring-1 ring-black/5 dark:ring-white/5">
                             <span className="material-icons text-5xl text-primary">smart_toy</span>
                         </div>
@@ -547,7 +567,7 @@ export default function ChatPanel({ onMobileMenuOpen }) {
                         <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto text-lg leading-relaxed">
                             I'm ready to assist with your tasks, answer questions, or generate code.
                         </p>
-                    </div>
+                    </motion.div>
                 ) : (
                     (displayMessages || []).map((msg, index) => (
                         <motion.div
@@ -585,7 +605,7 @@ export default function ChatPanel({ onMobileMenuOpen }) {
                                     </div>
                                 )}
 
-                                <div className={`${msg.role === 'user' ? 'bg-[#f3f4f6] dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-3xl rounded-tr-sm px-6 py-4' : 'bg-[#f9fafb] dark:bg-[#151b26] border border-gray-100 dark:border-slate-800 shadow-sm rounded-3xl rounded-tl-sm px-6 py-4 text-gray-800 dark:text-slate-200 w-full overflow-x-auto'} text-base leading-relaxed`}>
+                                <div className={`${msg.role === 'user' ? 'bg-gradient-to-br from-primary to-indigo-600 text-white shadow-lg shadow-primary/20 rounded-3xl rounded-tr-sm px-6 py-4' : 'bg-white/80 dark:bg-white/[0.02] backdrop-blur-xl border border-black/5 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 rounded-3xl rounded-tl-sm px-6 py-4 text-slate-800 dark:text-slate-200 w-full overflow-x-auto'} text-[15px] sm:text-base leading-relaxed`}>
                                     <div className="markdown-content">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
@@ -629,24 +649,24 @@ export default function ChatPanel({ onMobileMenuOpen }) {
                 }
 
                 {/* Typing Indicator */}
-                {
-                    (loading || streaming) && (
-                        <div className="flex justify-start">
-                            <div className="bg-white/80 dark:bg-[#1e2936]/90 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 shadow-sm mr-12 rounded-tl-sm flex gap-1.5 items-center h-12">
-                                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></span>
+                <AnimatePresence>
+                    {(loading || streaming) && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="flex justify-start pt-2">
+                            <div className="bg-white/80 dark:bg-white/[0.02] backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-3xl p-4 shadow-xl shadow-black/5 dark:shadow-black/20 mr-12 rounded-tl-sm flex gap-2 items-center h-12">
+                                <span className="w-2 h-2 bg-primary/60 rounded-full animate-pulse shadow-[0_0_8px_rgba(var(--color-primary),0.8)]"></span>
+                                <span className="w-2 h-2 bg-primary/80 rounded-full animate-pulse [animation-delay:150ms] shadow-[0_0_8px_rgba(var(--color-primary),0.8)]"></span>
+                                <span className="w-2 h-2 bg-primary rounded-full animate-pulse [animation-delay:300ms] shadow-[0_0_8px_rgba(var(--color-primary),0.8)]"></span>
                             </div>
-                        </div>
-                    )
-                }
+                        </motion.div>
+                    )}
+                </AnimatePresence>
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area — always visible at bottom, never scrolls */}
-            <div className="shrink-0 bg-white dark:bg-[#0b1217] border-t border-gray-100 dark:border-slate-800/50 pt-2 px-3 sm:px-6 md:px-10 lg:px-24 xl:px-48 z-20" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}>
+            {/* Input Area — floating glass container */}
+            <div className="shrink-0 bg-transparent bg-gradient-to-t from-slate-50 via-slate-50/90 to-transparent dark:from-[#070b10] dark:via-[#070b10]/90 pt-8 px-3 sm:px-6 md:px-10 lg:px-24 xl:px-48 z-20" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 24px)' }}>
 
-                <div className="relative bg-white dark:bg-[#151b26] border border-gray-200 dark:border-slate-700 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08),0_1px_4px_-1px_rgba(0,0,0,0.05)] dark:shadow-black/30 rounded-[1.5rem] sm:rounded-[2rem] p-1.5 sm:p-2 flex items-center transition-shadow focus-within:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] focus-within:border-gray-300 dark:focus-within:border-slate-600 group">
+                <div className="relative bg-white/90 dark:bg-[#0f151d]/90 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.5)] rounded-[2rem] p-1.5 sm:p-2 flex items-center transition-all duration-300 focus-within:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.2)] dark:focus-within:shadow-primary/10 focus-within:border-primary/30 dark:focus-within:border-primary/30 group">
 
                     {/* ═══ STATE 1: Recording — show inline waveform ═══ */}
                     {isRecording ? (

@@ -8,7 +8,7 @@ export default function Header({ activeView, researchMode, setResearchMode, lang
     };
 
     return (
-        <header className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#15232b]">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-black/5 dark:border-white/5 bg-white/70 dark:bg-[#070b10]/70 backdrop-blur-2xl sticky top-0 z-30">
             <div className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold text-slate-800 dark:text-white">{titles[activeView] || 'Dashboard'}</h2>
                 {activeView === 'chat' && (
@@ -21,9 +21,9 @@ export default function Header({ activeView, researchMode, setResearchMode, lang
             <div className="flex items-center gap-3">
                 <button
                     onClick={() => setResearchMode(!researchMode)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${researchMode
-                            ? 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700'
-                            : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${researchMode
+                            ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-purple-500/30 hover:shadow-purple-500/50 border border-white/10'
+                            : 'bg-white/50 dark:bg-white/5 text-slate-600 hover:bg-white/80 dark:hover:bg-white/10 dark:text-slate-300 border border-black/5 dark:border-white/5'
                         }`}
                 >
                     <span className="material-icons text-sm">{researchMode ? 'psychology' : 'bolt'}</span>
@@ -32,7 +32,7 @@ export default function Header({ activeView, researchMode, setResearchMode, lang
 
                 <button
                     onClick={() => setLanguage(language === 'English' ? 'Hindi' : 'English')}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-white/50 dark:bg-white/5 text-slate-600 hover:bg-white/80 dark:hover:bg-white/10 dark:text-slate-300 border border-black/5 dark:border-white/5 transition-all shadow-sm"
                 >
                     <span className="material-icons text-sm">translate</span>
                     {language === 'English' ? 'English' : 'Hindi'}
@@ -40,8 +40,8 @@ export default function Header({ activeView, researchMode, setResearchMode, lang
 
                 <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1"></div>
 
-                <div className="flex items-center gap-2 text-xs font-medium text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20 px-2 py-1 rounded">
-                    <span className="material-icons text-sm">dataset</span>
+                <div className="flex items-center gap-1.5 text-[11px] font-black tracking-wide text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 uppercase">
+                    <span className="material-icons text-[14px]">dataset</span>
                     RAG Active
                 </div>
             </div>

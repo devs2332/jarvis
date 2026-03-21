@@ -54,7 +54,16 @@ class LLMClient:
 
         try:
             client = None
-            if provider == "groq":
+            if provider == "custom":
+                from openai import OpenAI
+                api_key = (api_keys or {}).get("custom") or "dummy-key"
+                base_url = (api_keys or {}).get("custom_base_url")
+                if not base_url:
+                    raise ValueError("custom_base_url not provided for custom provider")
+                client = OpenAI(base_url=base_url, api_key=api_key)
+                logger.info(f"✅ Custom API client initialized: {base_url}")
+
+            elif provider == "groq":
                 from groq import Groq
                 api_key = (api_keys or {}).get("groq") or os.getenv("GROQ_API_KEY")
                 if not api_key:
@@ -152,7 +161,13 @@ class LLMClient:
                 logger.debug(f"LLM request attempt {attempt + 1}/{self.max_retries} ({active_provider}:{model})")
                 client = self._get_client(active_provider, api_keys=api_keys)
                 
-                if active_provider == "groq":
+                if active_provider == "custom":
+                    res = client.chat.completions.create(
+                        model=model, messages=[{"role": "user", "content": prompt}], temperature=temperature
+                    )
+                    return res.choices[0].message.content
+
+                elif active_provider == "groq":
                     res = client.chat.completions.create(
                         model=model, messages=[{"role": "user", "content": prompt}], temperature=temperature
                     )
@@ -235,7 +250,16 @@ class LLMClient:
         try:
             client = self._get_client(active_provider, api_keys=api_keys)
             
-            if active_provider == "groq":
+            if active_provider == "custom":
+                stream = client.chat.completions.create(
+                    model=model, messages=[{"role": "user", "content": prompt}], temperature=temperature, stream=True
+                )
+                for chunk in stream:
+                    delta = chunk.choices[0].delta
+                    if delta.content: 
+                        yield delta.content
+
+            elif active_provider == "groq":
                 stream = client.chat.completions.create(
                     model=model, messages=[{"role": "user", "content": prompt}], temperature=temperature, stream=True
                 )
@@ -352,7 +376,7 @@ class LLMClient:
             client = self._get_client(active_provider, api_keys=api_keys)
 
             # Providers with native tool-calling support
-            if active_provider in ("openai", "groq", "openrouter"):
+            if active_provider in ("openai", "groq", "openrouter", "custom"):
                 res = client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],

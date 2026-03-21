@@ -50,7 +50,7 @@ export default function InlineWaveform({ audioLevel = 0, onCancel, onConfirm }) 
                                 damping: 25,
                                 mass: 0.3,
                             }}
-                            className="w-[3px] rounded-full bg-gray-400 dark:bg-slate-400"
+                            className="w-[3px] rounded-full bg-primary/80 shadow-[0_0_8px_rgba(var(--color-primary-rgb),0.5)] transition-colors"
                             style={{ minHeight: silentHeight }}
                         />
                     );
@@ -60,7 +60,7 @@ export default function InlineWaveform({ audioLevel = 0, onCancel, onConfirm }) 
             {/* Cancel (X) button */}
             <button
                 onClick={onCancel}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition shrink-0"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all hover:scale-110 shrink-0"
                 title="Cancel recording"
             >
                 <span className="material-icons text-xl">close</span>
@@ -69,7 +69,7 @@ export default function InlineWaveform({ audioLevel = 0, onCancel, onConfirm }) 
             {/* Confirm (✔) button */}
             <button
                 onClick={onConfirm}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-hover transition shrink-0 shadow-sm"
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-b from-primary to-blue-600 text-white hover:shadow-lg hover:shadow-primary/40 hover:scale-110 transition-all shrink-0 shadow-sm border border-white/10"
                 title="Confirm recording"
             >
                 <span className="material-icons text-xl">check</span>

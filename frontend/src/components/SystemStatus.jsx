@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { fetchJSON } from '../utils/api';
 
 export default function SystemStatus({ onMobileMenuOpen }) {
@@ -22,32 +23,39 @@ export default function SystemStatus({ onMobileMenuOpen }) {
     }
 
     const StatCard = ({ icon, color, title, value, sub, children }) => (
-        <div className="bg-white dark:bg-[#1a2c36] border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-start justify-between mb-4">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white ${color}`}>
-                    <span className="material-icons">{icon}</span>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -5, transition: { duration: 0.2 } }} className="group bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-3xl p-6 shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl dark:hover:shadow-black/40 hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
+            <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-20 pointer-events-none transition-opacity group-hover:opacity-40 ${color}`} />
+            <div className="flex items-start justify-between mb-5 relative z-10">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${color} shadow-${color.replace('bg-', '')}/30`}>
+                    <span className="material-icons text-xl">{icon}</span>
                 </div>
                 <div className="text-right">
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white">{value}</div>
-                    <div className="text-xs text-slate-400 font-medium uppercase tracking-wider">{title}</div>
+                    <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{value}</div>
+                    <div className="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5">{title}</div>
                 </div>
             </div>
-            {sub && <div className="text-sm text-slate-500 dark:text-slate-400 mb-2">{sub}</div>}
-            {children}
-        </div>
+            <div className="relative z-10">
+                {sub && <div className="text-sm text-slate-600 dark:text-slate-400 mb-2 font-medium">{sub}</div>}
+                {children}
+            </div>
+        </motion.div>
     );
 
     return (
-        <div className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex items-center gap-4 mb-8">
-                    <button onClick={onMobileMenuOpen} className="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-                        <span className="material-icons">menu</span>
-                    </button>
-                    <h2 className="text-3xl font-bold text-slate-800 dark:text-white">System Status</h2>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#070b10] p-8 relative">
+            <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none -z-10 blur-3xl opacity-60" />
+            <div className="max-w-6xl mx-auto relative z-10">
+                <div className="flex flex-col mb-10">
+                    <div className="flex items-center gap-4">
+                        <button onClick={onMobileMenuOpen} className="md:hidden p-2 -ml-2 text-slate-400 hover:text-primary transition-colors">
+                            <span className="material-icons">menu</span>
+                        </button>
+                        <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">System Status</h2>
+                    </div>
+                    <p className="text-slate-500 dark:text-slate-400 text-lg mt-2 ml-10 md:ml-0">Real-time platform telemetry and connection health.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.1 } } }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <StatCard
                         icon="smart_toy"
                         color="bg-blue-500"
@@ -118,8 +126,8 @@ export default function SystemStatus({ onMobileMenuOpen }) {
                         value="RAG"
                         sub="Retrieval Augmented Gen"
                     />
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 }

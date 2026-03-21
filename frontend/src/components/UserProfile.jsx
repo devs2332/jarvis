@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function UserProfile({ onMobileMenuOpen }) {
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+    };
+
     return (
-        <div className="flex-1 flex flex-col h-[calc(100vh-theme(spacing.16))] overflow-hidden relative bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
-            <header className="h-16 flex items-center justify-between px-6 lg:px-10 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/80 backdrop-blur-sm z-10 shrink-0">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col h-[calc(100vh-theme(spacing.16))] overflow-hidden relative bg-slate-50 dark:bg-[#070b10] text-slate-900 dark:text-white font-display">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none -z-10 blur-3xl opacity-60" />
+
+            <header className="h-[72px] flex items-center justify-between px-6 lg:px-10 border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-[#070b10]/60 backdrop-blur-2xl z-10 shrink-0 sticky top-0">
                 <div className="flex items-center gap-3">
                     <button onClick={onMobileMenuOpen} className="md:hidden p-2 -ml-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                         <span className="material-icons">menu</span>
@@ -18,13 +32,13 @@ export default function UserProfile({ onMobileMenuOpen }) {
                 </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-6 lg:p-10">
-                <div className="max-w-5xl mx-auto space-y-8 pb-12">
+            <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar">
+                <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-5xl mx-auto space-y-8 pb-12">
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                         {/* Profile Information (Span 8) */}
-                        <div className="md:col-span-8 bg-white dark:bg-[#15222b] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-                            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/50 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+                        <motion.div variants={itemVariants} className="md:col-span-8 bg-white/70 dark:bg-white/[0.02] backdrop-blur-2xl rounded-3xl border border-black/5 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden flex flex-col">
+                            <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-white/50 dark:bg-white/[0.01]">
                                 <h2 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                                     <span className="material-icons text-primary text-xl">person</span>
                                     Profile Information
@@ -80,12 +94,13 @@ export default function UserProfile({ onMobileMenuOpen }) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Subscription (Span 4) */}
-                        <div className="md:col-span-4 space-y-6 flex flex-col">
-                            <div className="bg-white dark:bg-[#15222b] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden h-full">
-                                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/50 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/30 dark:to-[#15222b]">
+                        <motion.div variants={itemVariants} className="md:col-span-4 space-y-6 flex flex-col">
+                            <div className="bg-white/70 dark:bg-white/[0.02] backdrop-blur-2xl rounded-3xl border border-black/5 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden h-full relative">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                                <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 bg-white/50 dark:bg-white/[0.01]">
                                     <h2 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                                         <span className="material-icons text-primary text-xl">stars</span>
                                         Subscription
@@ -122,11 +137,11 @@ export default function UserProfile({ onMobileMenuOpen }) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Security Card (Full Width) */}
-                        <div className="md:col-span-12 bg-white dark:bg-[#15222b] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-800/20">
+                        <motion.div variants={itemVariants} className="md:col-span-12 bg-white/70 dark:bg-white/[0.02] backdrop-blur-2xl rounded-3xl border border-black/5 dark:border-white/5 shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden">
+                            <div className="px-6 py-5 border-b border-black/5 dark:border-white/5 bg-white/50 dark:bg-white/[0.01]">
                                 <h2 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                                     <span className="material-icons text-primary text-xl">security</span>
                                     Security
@@ -156,7 +171,7 @@ export default function UserProfile({ onMobileMenuOpen }) {
                                     </label>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Danger Zone */}
                         <div className="md:col-span-12 mt-4 pt-6 border-t border-slate-200 dark:border-slate-800/50">
@@ -171,8 +186,8 @@ export default function UserProfile({ onMobileMenuOpen }) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 }
