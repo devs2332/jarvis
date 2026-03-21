@@ -146,7 +146,7 @@ class Brain:
     # Synchronous (full response)
     # ──────────────────────────────────────────────
 
-    def think(self, user_query, research_mode=False, fast_mode=False, search_mode="none", language="English", provider=None, model=None, api_keys=None):
+    def think(self, user_query, research_mode=False, fast_mode=False, search_mode="none", language="English", provider=None, model=None):
         """Process a user query using RAG pipeline. Returns complete response string."""
         try:
             prompt, search_results, memory_context = self._build_rag_context(
@@ -166,7 +166,7 @@ class Brain:
                 }
                 active_model = model_map.get(active_provider, "unknown")
             
-            answer = self.llm.generate(prompt, provider=provider, model=model, api_keys=api_keys)
+            answer = self.llm.generate(prompt, provider=provider, model=model)
             logger.info(f"✅ Generated answer ({len(answer)} chars)")
 
             # Save to conversation history with full metadata
@@ -192,7 +192,7 @@ class Brain:
     # ──────────────────────────────────────────────
 
     async def think_stream(self, user_query, research_mode=False, fast_mode=False,
-                           search_mode="none", language="English", provider=None, model=None, api_keys=None):
+                           search_mode="none", language="English", provider=None, model=None):
         """
         Async generator that yields response tokens for streaming.
         Uses the same RAG pipeline as think() but streams the LLM output.
@@ -205,12 +205,12 @@ class Brain:
             # Stream from LLM
             full_response = ""
             if hasattr(self.llm, "generate_stream"):
-                for token in self.llm.generate_stream(prompt, provider=provider, model=model, api_keys=api_keys):
+                for token in self.llm.generate_stream(prompt, provider=provider, model=model):
                     full_response += token
                     yield token
             else:
                 # Fallback: generate full response, yield in word chunks
-                full_response = self.llm.generate(prompt, provider=provider, model=model, api_keys=api_keys)
+                full_response = self.llm.generate(prompt, provider=provider, model=model)
                 words = full_response.split(" ")
                 chunk_size = 4
                 for i in range(0, len(words), chunk_size):

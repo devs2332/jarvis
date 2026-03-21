@@ -27,7 +27,10 @@ export default {
         return newResponse;
 
       } catch (e) {
-        return new Response(JSON.stringify({ error: `Proxy Error: ${e.message}` }), {
+        return new Response(JSON.stringify({ 
+          error: "Proxy Connection Failed",
+          detail: `Failed to connect to backend (${backendStr}). The server is either offline or unreachable.`
+        }), {
           status: 502,
           headers: { 'Content-Type': 'application/json' }
         });
